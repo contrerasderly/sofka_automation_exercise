@@ -1,0 +1,71 @@
+plugins {
+    id 'java'
+    id 'net.serenity-bdd.serenity-gradle-plugin' version '4.2.16'
+}
+
+group = "com.automationexercise"
+version = "1.0"
+
+repositories {
+    mavenCentral()
+}
+
+sourceCompatibility = 17
+targetCompatibility = 17
+
+ext {
+    serenityVersion = '4.2.16'
+}
+
+test {
+    useJUnit()
+
+    // Tags opcionales
+    if (project.hasProperty("tags")) {
+        systemProperty "cucumber.filter.tags", project.getProperty("tags")
+    }
+
+    // Output correcto
+    systemProperty "serenity.outputDirectory", "target/site/serenity"
+    systemProperty "webdriver.driver", "chrome"
+
+    // SERENITY NECESITA CUCUMBER JSON
+    systemProperty "cucumber.plugin", "json:target/cucumber-report/cucumber.json"
+}
+
+dependencies {
+
+    // Serenity core
+    testImplementation "net.serenity-bdd:serenity-core:${serenityVersion}"
+    testImplementation "net.serenity-bdd:serenity-junit:${serenityVersion}"
+    testImplementation "net.serenity-bdd:serenity-screenplay:${serenityVersion}"
+    testImplementation "net.serenity-bdd:serenity-screenplay-webdriver:${serenityVersion}"
+
+    // Cucumber + Serenity
+    testImplementation "net.serenity-bdd:serenity-cucumber:${serenityVersion}"
+
+    // Cucumber JVM
+    testImplementation "io.cucumber:cucumber-java:7.18.1"
+    testImplementation "io.cucumber:cucumber-junit:7.18.1"
+
+    // Selenium
+    testImplementation "org.seleniumhq.selenium:selenium-java:4.25.0"
+
+    // JUnit4 requerido
+    testImplementation "junit:junit:4.13.2"
+
+    // REST + Serenity REST
+    testImplementation "io.rest-assured:rest-assured:5.4.0"
+    testImplementation "net.serenity-bdd:serenity-rest-assured:${serenityVersion}"
+    testImplementation "net.serenity-bdd:serenity-screenplay-rest:${serenityVersion}"
+
+    // Ensure
+    testImplementation "net.serenity-bdd:serenity-ensure:${serenityVersion}"
+
+    // JSON
+    testImplementation "com.fasterxml.jackson.core:jackson-databind:2.15.2"
+}
+
+serenity {
+    requirementsDir = "src/test/resources/features"
+}

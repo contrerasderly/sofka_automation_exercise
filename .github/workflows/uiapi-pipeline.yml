@@ -1,0 +1,63 @@
+name: Serenity BDD Automation Pipeline - UI Tests
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+
+jobs:
+  run-serenity-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout del código
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Set up Java (Serenity requiere Java 17)
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      # 3. Cache Gradle
+      - name: Cache Gradle packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      # 4. Dar permisos a Gradle Wrapper
+      - name: Grant execute permission for Gradle
+        run: chmod +x ./gradlew
+
+      # 5. Ejecutar los tests UI
+      - name: Run Serenity UI Tests
+        env:
+          # Variables opcionales para BrowserStack
+          BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
+          BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
+        run: |
+          ./gradlew clean test -Dtags="@ui"
+
+      # 6. Publicar reportes de Serenity
+      - name: Upload Serenity Reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: serenity-report
+          path: build/reports/serenity
+          retention-days: 10
+
+      # 7. Publicar screenshots como artefactos
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshots
+          path: build/reports/tests
+          retention-days: 10
