@@ -39,9 +39,8 @@ jobs:
       # 5. Ejecutar los tests UI
       - name: Run Serenity UI Tests
         env:
-          # Variables opcionales para BrowserStack
-          BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
-          BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
+          BROWSERSTACK_USERNAME: ${{ secrets.derlycontreras_AyCOsQ }}
+          BROWSERSTACK_ACCESS_KEY: ${{ secrets.x1g1srrCwsXHTAbh6DtZ }}
         run: |
           ./gradlew clean test -Dtags="@ui"
 
